@@ -19,12 +19,28 @@ class ClaudeAdapter extends BaseAdapter {
 	public function generate_completion( array $messages, array $settings ): array {
 		$model = $settings['model'] ?? 'claude-3-5-sonnet-20240620';
 
-		$response = $this->request( 'messages', [
+		// Extract system prompt if present in messages
+		$system_prompt = $settings['system_prompt'] ?? '';
+		$filtered_messages = [];
+		foreach ( $messages as $msg ) {
+			if ( $msg['role'] === 'system' ) {
+				$system_prompt = $msg['content'];
+			} else {
+				$filtered_messages[] = $msg;
+			}
+		}
+
+		$payload = [
 			'model'      => $model,
-			'messages'   => $messages,
+			'messages'   => $filtered_messages,
 			'max_tokens' => (int) ( $settings['max_tokens'] ?? 2048 ),
-			'system'     => $settings['system_prompt'] ?? '',
-		], [
+		];
+
+		if ( ! empty( $system_prompt ) ) {
+			$payload['system'] = $system_prompt;
+		}
+
+		$response = $this->request( 'messages', $payload, [
 			'x-api-key'         => $this->api_key,
 			'anthropic-version' => '2023-06-01',
 		] );

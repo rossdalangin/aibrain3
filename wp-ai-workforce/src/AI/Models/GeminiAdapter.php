@@ -20,9 +20,22 @@ class GeminiAdapter extends BaseAdapter {
 		$model = $settings['model'] ?? 'gemini-1.5-pro';
 		$api_key = $this->api_key;
 
+		// Extract system prompt if present in messages
+		$system_instruction = null;
+		$filtered_messages = [];
+		foreach ( $messages as $msg ) {
+			if ( $msg['role'] === 'system' ) {
+				$system_instruction = [
+					'parts' => [ [ 'text' => $msg['content'] ] ]
+				];
+			} else {
+				$filtered_messages[] = $msg;
+			}
+		}
+
 		// Convert OpenAI format to Gemini format
 		$contents = [];
-		foreach ( $messages as $msg ) {
+		foreach ( $filtered_messages as $msg ) {
 			$role = ( $msg['role'] === 'user' ) ? 'user' : 'model';
 			$contents[] = [
 				'role'  => $role,
@@ -32,13 +45,19 @@ class GeminiAdapter extends BaseAdapter {
 
 		$endpoint = $model . ':generateContent?key=' . $api_key;
 
-		$response = $this->request( $endpoint, [
+		$payload = [
 			'contents' => $contents,
 			'generationConfig' => [
 				'temperature' => (float) ( $settings['temperature'] ?? 0.7 ),
 				'maxOutputTokens' => (int) ( $settings['max_tokens'] ?? 2048 ),
 			],
-		], [ 'Authorization' => '' ] ); // Key is in query string
+		];
+
+		if ( $system_instruction ) {
+			$payload['systemInstruction'] = $system_instruction;
+		}
+
+		$response = $this->request( $endpoint, $payload, [ 'Authorization' => '' ] ); // Key is in query string
 
 		if ( is_wp_error( $response ) ) {
 			throw new \Exception( $response->get_error_message() );
