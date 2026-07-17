@@ -23,6 +23,12 @@ class ConversationRepository {
 		return $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$this->table_name} WHERE user_id = %d ORDER BY last_message_at DESC", $user_id ), ARRAY_A );
 	}
 
+	public function get_by_id( int $id ): ?array {
+		global $wpdb;
+		$result = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$this->table_name} WHERE id = %d", $id ), ARRAY_A );
+		return $result ?: null;
+	}
+
 	public function create( array $data ): int {
 		global $wpdb;
 		$wpdb->insert( $this->table_name, $data );
