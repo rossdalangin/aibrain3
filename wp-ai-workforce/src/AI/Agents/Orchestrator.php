@@ -116,6 +116,13 @@ class Orchestrator {
 		}
 
 		$settings = $this->parse_settings( $agent_data['model_settings'] ?? '{}' );
+		if ( empty( $settings['model'] ) ) {
+			$settings_repo = new \NexusAI\Workforce\Repositories\SettingsRepository();
+			$settings['model'] = $agent_data['model'] ?? $settings_repo->get( 'default_model', 'gpt-4o' );
+		}
+		if ( empty( $settings['model'] ) ) {
+			$settings['model'] = 'gpt-4o';
+		}
 		$settings['tools'] = $this->action_registry->get_tools_definition();
 
 		$usage = [ 'prompt_tokens' => 0, 'completion_tokens' => 0 ];
