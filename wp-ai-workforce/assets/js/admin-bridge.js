@@ -2,7 +2,7 @@
  * Nexus AI Admin Bridge
  * Handles AJAX communications for PHP-rendered forms.
  */
-document.addEventListener('DOMContentLoaded', function() {
+function initNexusAdminBridge() {
 
     // --- 0. Core Helper ---
     function showToast(message, type = 'success') {
@@ -939,4 +939,10 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initNexusAdminBridge);
+} else {
+    initNexusAdminBridge();
+}
