@@ -1580,7 +1580,7 @@ class AdminRenderer {
 								<tr>
 									<td class="py-5 px-2">
 										<span class="px-3 py-1 rounded-full bg-accent/10 text-accent text-[10px] font-bold uppercase border border-accent/20">
-											<?php echo esc_html( $log['event_type'] ); ?>
+											<?php echo esc_html( $log['action_type'] ?? '' ); ?>
 										</span>
 									</td>
 									<td class="py-5 px-2 font-medium text-[#1e293b]">

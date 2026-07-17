@@ -735,8 +735,9 @@ function initNexusAdminBridge() {
         nexusFetch('chat/meeting', 'POST', meetingPayload).then(res => {
             document.getElementById(thinkingId)?.remove();
 
+            const resContent = res ? (res.content || res.message || res.error || '') : '';
             // Detect consensus/action/voting in response
-            const lowerContent = res.content.toLowerCase();
+            const lowerContent = resContent.toLowerCase();
             if (lowerContent.includes('decision:') || lowerContent.includes('action:')) {
                  showToast('Strategic milestone detected: Decision proposed.', 'success');
             }
@@ -746,11 +747,14 @@ function initNexusAdminBridge() {
 
             const colors = ['#7C3AED', '#0ea5e9', '#f59e0b', '#10b981', '#ef4444', '#f97316'];
             const agentColor = colors[round % colors.length];
+            const agentName = res ? (res.agent_name || 'AI Agent') : 'AI Agent';
+            const positionName = res ? (res.position || 'Specialist') : 'Specialist';
+
             const bubble = `<div class="flex gap-6 items-start animate-fade-in-up">
-                <div class="w-12 h-12 rounded-full shrink-0 flex items-center justify-center font-bold text-[#1e293b] shadow-xl" style="background-color: ${agentColor}">${escapeHTML(res.agent_name[0])}</div>
+                <div class="w-12 h-12 rounded-full shrink-0 flex items-center justify-center font-bold text-[#1e293b] shadow-xl" style="background-color: ${agentColor}">${escapeHTML(agentName[0])}</div>
                 <div class="flex-1 p-6 bg-[#f8fafc]/5 rounded-3xl border-l-4 shadow-2xl" style="border-color: ${agentColor}">
-                    <p class="text-[10px] text-gray-500 font-bold uppercase mb-2 tracking-widest">${escapeHTML(res.agent_name)} • ${escapeHTML(res.position)}</p>
-                    <p class="text-sm text-gray-200 leading-relaxed whitespace-pre-wrap">${escapeHTML(res.content)}</p>
+                    <p class="text-[10px] text-gray-500 font-bold uppercase mb-2 tracking-widest">${escapeHTML(agentName)} • ${escapeHTML(positionName)}</p>
+                    <p class="text-sm text-gray-200 leading-relaxed whitespace-pre-wrap">${escapeHTML(resContent)}</p>
                 </div>
             </div>`;
             const transcript = document.getElementById('nexus-meeting-transcript');
@@ -863,7 +867,8 @@ function initNexusAdminBridge() {
             // Clear chat transcript on agent switch
             chatContainer.innerHTML = '<div class="text-center text-accent py-10 animate-pulse">Session ready. Ask your agent a question below.</div>';
 
-            const agent = window.nexusPlaygroundAgents.find(a => parseInt(a.id) === parseInt(agentId));
+            const agents = window.nexusPlaygroundAgents || [];
+            const agent = agents.find(a => parseInt(a.id) === parseInt(agentId));
             if (agent) {
                 detailsContainer.classList.remove('hidden');
                 document.getElementById('nexus-play-position').innerText = agent.position || 'Specialist';
@@ -922,16 +927,17 @@ function initNexusAdminBridge() {
                 message: messageText
             }).then(res => {
                 document.getElementById(thinkingId)?.remove();
-                if (res.conversation_id) {
+                if (res && res.conversation_id) {
                     currentConversationId = res.conversation_id;
                 }
+                const responseText = res ? (res.response || res.message || res.error || 'No response') : 'Connection failed';
                 // Append AI bubble
                 const bubble = `
                     <div class="flex gap-4 items-start animate-fade-in-up">
                         <div class="w-10 h-10 rounded-full shrink-0 flex items-center justify-center font-bold text-[#1e293b] bg-accent shadow-xl">AI</div>
                         <div class="flex-1 p-5 bg-[#f8fafc]/5 rounded-3xl border border-nexus-border/50 shadow-2xl">
                             <p class="text-[9px] text-gray-500 font-bold uppercase mb-1 tracking-widest">Agent Response</p>
-                            <p class="text-sm text-gray-200 leading-relaxed whitespace-pre-wrap">${escapeHTML(res.response)}</p>
+                            <p class="text-sm text-gray-200 leading-relaxed whitespace-pre-wrap">${escapeHTML(responseText)}</p>
                         </div>
                     </div>`;
                 chatContainer.innerHTML += bubble;
