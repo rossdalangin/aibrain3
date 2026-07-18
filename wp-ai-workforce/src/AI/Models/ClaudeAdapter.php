@@ -17,6 +17,10 @@ class ClaudeAdapter extends BaseAdapter {
 	}
 
 	public function generate_completion( array $messages, array $settings ): array {
+		if ( empty( $this->api_key ) ) {
+			return $this->get_mock_completion( $messages );
+		}
+
 		$model = $settings['model'] ?? 'claude-3-5-sonnet-20240620';
 
 		// Extract system prompt if present in messages
