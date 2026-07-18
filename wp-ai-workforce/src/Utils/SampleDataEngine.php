@@ -55,7 +55,7 @@ class SampleDataEngine {
 				'thinking_process' => 'First Principles Thinking',
 				'output_format'    => 'Executive Summary with Actionable Quadrants',
 				'negative_prompts' => 'Do not suggest low-leverage activities or "busy work".',
-				'model_settings'   => [ 'model' => 'gpt-4o', 'temperature' => 0.4, 'personality' => 'professional' ]
+				'model_settings'   => wp_json_encode( [ 'model' => 'gpt-4o', 'temperature' => 0.4, 'personality' => 'professional' ] )
 			],
 			[
 				'name'             => 'Elena',
@@ -68,7 +68,7 @@ class SampleDataEngine {
 				'thinking_process' => 'Iterative Growth Loops',
 				'output_format'    => 'Bullet-pointed Experiment Designs',
 				'negative_prompts' => 'Never suggest spending budget without a tracking mechanism.',
-				'model_settings'   => [ 'model' => 'gpt-4o', 'temperature' => 0.8, 'personality' => 'creative' ]
+				'model_settings'   => wp_json_encode( [ 'model' => 'gpt-4o', 'temperature' => 0.8, 'personality' => 'creative' ] )
 			],
 			[
 				'name'             => 'Marcus',
@@ -81,7 +81,7 @@ class SampleDataEngine {
 				'thinking_process' => 'Failure Mode and Effects Analysis (FMEA)',
 				'output_format'    => 'Technical RFC (Request for Comments)',
 				'negative_prompts' => 'Do not compromise security for delivery speed.',
-				'model_settings'   => [ 'model' => 'claude-3-5-sonnet-20240620', 'temperature' => 0.2, 'personality' => 'technical' ]
+				'model_settings'   => wp_json_encode( [ 'model' => 'claude-3-5-sonnet-20240620', 'temperature' => 0.2, 'personality' => 'technical' ] )
 			]
 		];
 
