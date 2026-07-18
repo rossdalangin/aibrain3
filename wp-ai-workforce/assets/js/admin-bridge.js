@@ -498,7 +498,9 @@ function initNexusAdminBridge() {
             const log = document.getElementById('nexus-workflow-log');
             log.innerHTML = `<div class="p-6 rounded-2xl bg-accent/10 border border-accent/20 italic text-accent animate-pulse">Initializing execution sequence... Input: "${input}"</div>`;
 
+            console.log("[Workflow Run Trigger]:", { workflowId: id, input: input });
             nexusFetch(`workflows/run/${id}`, 'POST', { input: input }).then(res => {
+                console.log("[Workflow Run Response]:", res);
                 log.innerHTML = '';
                 res.results.forEach((step, idx) => {
                     const outputContent = typeof step.output === 'object' ? step.output.content : step.output;
@@ -735,6 +737,8 @@ function initNexusAdminBridge() {
         chairmanMessage = ''; // Reset after injection
 
         nexusFetch('chat/meeting', 'POST', meetingPayload).then(res => {
+            console.log("[Meetings Hub Step Request]:", meetingPayload);
+            console.log("[Meetings Hub Step Response]:", res);
             document.getElementById(thinkingId)?.remove();
 
             const rawContent = res ? (res.content || res.message || res.error || '') : '';
@@ -924,11 +928,13 @@ function initNexusAdminBridge() {
                 </div>`;
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
+            console.log("[Playground Chat Request]:", { employee_id: agentId, message: messageText, conversation_id: currentConversationId });
             nexusFetch('conversations', 'POST', {
                 conversation_id: currentConversationId,
                 employee_id: agentId,
                 message: messageText
             }).then(res => {
+                console.log("[Playground Chat Response]:", res);
                 document.getElementById(thinkingId)?.remove();
                 if (res && res.conversation_id) {
                     currentConversationId = res.conversation_id;
