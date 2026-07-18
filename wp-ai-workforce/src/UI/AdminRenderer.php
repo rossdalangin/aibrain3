@@ -1297,6 +1297,14 @@ class AdminRenderer {
 				</div>
 			</div>
 
+			<?php if ( empty( $agents ) ) : ?>
+				<div class="glass-panel p-8 rounded-3xl border-2 border-dashed border-nexus-border text-center max-w-6xl mb-10 bg-accent/5">
+					<h3 class="text-xl font-bold text-accent mb-2">Your AI Workforce is currently empty</h3>
+					<p class="text-sm text-gray-400 mb-6">Before you can organize strategy meetings, you need to hire your specialized team or populate the company database with sample executives.</p>
+					<button id="nexus-seed-samples" class="bg-accent text-[#1e293b] font-bold py-3 px-8 rounded-xl hover:opacity-90 transition-all nexus-btn-vibrant">Instantly Deploy Sample Executives</button>
+				</div>
+			<?php endif; ?>
+
 			<div class="grid grid-cols-1 lg:grid-cols-4 gap-10">
 				<!-- Meeting Controls Sidebar -->
 				<div class="lg:col-span-1 space-y-8">
@@ -1798,6 +1806,14 @@ class AdminRenderer {
 						}
 						?>
 					</div>
+				</div>
+			<?php endif; ?>
+
+			<?php if ( empty( $agents ) ) : ?>
+				<div class="glass-panel p-8 rounded-3xl border-2 border-dashed border-nexus-border text-center max-w-4xl mb-10 bg-accent/5">
+					<h3 class="text-xl font-bold text-accent mb-2">Your AI Workforce is currently empty</h3>
+					<p class="text-sm text-gray-400 mb-6">Before you can converse with your experts, you need to hire them or populate the company database with sample executives.</p>
+					<button id="nexus-seed-samples" class="bg-accent text-[#1e293b] font-bold py-3 px-8 rounded-xl hover:opacity-90 transition-all nexus-btn-vibrant">Instantly Deploy Sample Executives</button>
 				</div>
 			<?php endif; ?>
 
