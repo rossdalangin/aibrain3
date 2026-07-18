@@ -25,8 +25,9 @@ function initNexusAdminBridge() {
     }
 
     function escapeHTML(str) {
-        if (!str) return '';
-        return str.replace(/[&<>"']/g, function(m) {
+        if (str === null || str === undefined) return '';
+        const stringVal = typeof str === 'object' ? JSON.stringify(str) : String(str);
+        return stringVal.replace(/[&<>"']/g, function(m) {
             return {
                 '&': '&amp;',
                 '<': '&lt;',
@@ -38,16 +39,17 @@ function initNexusAdminBridge() {
     }
 
     async function nexusFetch(endpoint, method = 'GET', data = null) {
+        const localData = window.nexus_ai_data || {};
         const options = {
             method: method,
             headers: {
                 'Content-Type': 'application/json',
-                'X-WP-Nonce': nexus_ai_data.nonce
+                'X-WP-Nonce': localData.nonce || ''
             }
         };
         if (data) options.body = JSON.stringify(data);
 
-        let url = nexus_ai_data.rest_url;
+        let url = localData.rest_url || '/wp-json/';
         if (url.includes('?rest_route=')) {
             if (!url.endsWith('/')) {
                 url += '/';
@@ -735,7 +737,8 @@ function initNexusAdminBridge() {
         nexusFetch('chat/meeting', 'POST', meetingPayload).then(res => {
             document.getElementById(thinkingId)?.remove();
 
-            const resContent = res ? (res.content || res.message || res.error || '') : '';
+            const rawContent = res ? (res.content || res.message || res.error || '') : '';
+            const resContent = typeof rawContent === 'object' ? JSON.stringify(rawContent) : String(rawContent);
             // Detect consensus/action/voting in response
             const lowerContent = resContent.toLowerCase();
             if (lowerContent.includes('decision:') || lowerContent.includes('action:')) {
