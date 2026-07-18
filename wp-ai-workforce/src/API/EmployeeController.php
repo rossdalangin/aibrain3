@@ -71,8 +71,25 @@ class EmployeeController {
 		$data = [];
 		if ( isset( $params['name'] ) ) $data['name'] = sanitize_text_field( $params['name'] );
 		if ( isset( $params['position'] ) ) $data['position'] = sanitize_text_field( $params['position'] );
+		if ( isset( $params['department_id'] ) ) $data['department_id'] = absint( $params['department_id'] );
+		if ( isset( $params['role_description'] ) ) $data['role_description'] = wp_kses_post( $params['role_description'] );
+		if ( isset( $params['skills'] ) ) $data['skills'] = wp_kses_post( $params['skills'] );
+		if ( isset( $params['kpis'] ) ) $data['kpis'] = wp_kses_post( $params['kpis'] );
+		if ( isset( $params['prompt_template'] ) ) $data['prompt_template'] = wp_kses_post( $params['prompt_template'] );
+		if ( isset( $params['thinking_process'] ) ) $data['thinking_process'] = wp_kses_post( $params['thinking_process'] );
+		if ( isset( $params['output_format'] ) ) $data['output_format'] = wp_kses_post( $params['output_format'] );
+		if ( isset( $params['negative_prompts'] ) ) $data['negative_prompts'] = wp_kses_post( $params['negative_prompts'] );
+		if ( isset( $params['examples'] ) ) $data['examples'] = wp_kses_post( $params['examples'] );
+		if ( isset( $params['model_settings'] ) ) {
+			if ( is_array( $params['model_settings'] ) ) {
+				$data['model_settings'] = wp_json_encode( $params['model_settings'] );
+			} else {
+				$data['model_settings'] = sanitize_text_field( $params['model_settings'] );
+			}
+		}
 
 		$success = $this->repository->update( $id, $data );
+		( new AuditLogger() )->log( 'employee_updated', "Updated AI agent profile with ID $id", $id );
 		return new WP_REST_Response( [ 'success' => $success ], 200 );
 	}
 

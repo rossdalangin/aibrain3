@@ -111,7 +111,7 @@ class RestHandler {
 				'permission_callback' => [ $this, 'check_permission' ],
 			],
 			[
-				'methods'             => WP_REST_Server::EDITABLE,
+				'methods'             => [ WP_REST_Server::EDITABLE, WP_REST_Server::CREATABLE ],
 				'callback'            => function( \WP_REST_Request $request ) {
 					$id = (int) $request['id'];
 					$title = sanitize_text_field( $request['title'] );

@@ -70,7 +70,8 @@
                 });
                 const data = await response.json();
                 removeTyping(typingId);
-                appendMessage(data.response, 'ai');
+                const responseText = data ? (data.response || data.message || data.error || 'No response from agent') : 'No response from agent';
+                appendMessage(responseText, 'ai');
             } catch (e) {
                 removeTyping(typingId);
                 appendMessage("I'm sorry, I'm having trouble connecting right now. Please try again later.", 'ai');

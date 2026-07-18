@@ -116,24 +116,40 @@ class Orchestrator {
 		}
 
 		$settings = $this->parse_settings( $agent_data['model_settings'] ?? '{}' );
+		if ( empty( $settings['model'] ) ) {
+			$settings_repo = new \NexusAI\Workforce\Repositories\SettingsRepository();
+			$settings['model'] = $agent_data['model'] ?? $settings_repo->get( 'default_model', 'gpt-4o' );
+		}
+		if ( empty( $settings['model'] ) ) {
+			$settings['model'] = 'gpt-4o';
+		}
 		$settings['tools'] = $this->action_registry->get_tools_definition();
 
 		$usage = [ 'prompt_tokens' => 0, 'completion_tokens' => 0 ];
 
+		$result = [ 'content' => '', 'tool_calls' => [], 'usage' => [] ];
 		try {
 			$result = $this->model->generate_completion( $messages, $settings );
 			$usage['prompt_tokens']     += $result['usage']['prompt_tokens'] ?? 0;
 			$usage['completion_tokens'] += $result['usage']['completion_tokens'] ?? 0;
 		} catch ( \Exception $e ) {
 			// Failover to secondary provider if primary fails
-			$settings_repo = new \NexusAI\Workforce\Repositories\SettingsRepository();
-			$fallback_provider = $settings_repo->get( 'fallback_provider', 'claude' );
+			try {
+				$settings_repo = new \NexusAI\Workforce\Repositories\SettingsRepository();
+				$fallback_provider = $settings_repo->get( 'fallback_provider', 'claude' );
 
-			$fallback_model = \NexusAI\Workforce\AI\Factories\ModelFactory::create($fallback_provider);
-			$result = $fallback_model->generate_completion( $messages, $settings );
+				$fallback_model = \NexusAI\Workforce\AI\Factories\ModelFactory::create($fallback_provider);
+				$result = $fallback_model->generate_completion( $messages, $settings );
 
-			$usage['prompt_tokens']     += $result['usage']['prompt_tokens'] ?? 0;
-			$usage['completion_tokens'] += $result['usage']['completion_tokens'] ?? 0;
+				$usage['prompt_tokens']     += $result['usage']['prompt_tokens'] ?? 0;
+				$usage['completion_tokens'] += $result['usage']['completion_tokens'] ?? 0;
+			} catch ( \Exception $fallback_e ) {
+				$result = [
+					'content'    => "AI model interaction failed. Connection Error: " . $fallback_e->getMessage(),
+					'tool_calls' => [],
+					'usage'      => []
+				];
+			}
 		}
 
 		// 4. Handle tool calls (Recursive loop for multi-turn multi-tool execution)

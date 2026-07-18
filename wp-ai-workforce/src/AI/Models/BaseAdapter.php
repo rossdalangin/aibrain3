@@ -45,6 +45,11 @@ abstract class BaseAdapter implements AIModelInterface {
 			'Authorization' => 'Bearer ' . $this->api_key,
 		], $extra_headers );
 
+		// Filter out empty headers to prevent connection errors on some proxy servers
+		$headers = array_filter( $headers, function( $value ) {
+			return $value !== '';
+		} );
+
 		return wp_remote_post( $this->get_base_url() . $endpoint, [
 			'headers' => $headers,
 			'body'    => wp_json_encode( $payload ),

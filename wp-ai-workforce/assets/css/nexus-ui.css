@@ -59,6 +59,8 @@
 .text-[#1e293b] { color: var(--nexus-text-main) !important; }
 .text-gray-400 { color: var(--nexus-text-muted) !important; }
 .text-gray-500 { color: var(--nexus-text-muted) !important; }
+.text-gray-200 { color: var(--nexus-text-main) !important; }
+.text-gray-300 { color: var(--nexus-text-main) !important; }
 
 /* Dashboard Titles */
 .text-gradient-vibrant {
@@ -154,3 +156,8 @@ tr:hover td {
 .bg-nexus-elevated { background-color: #f1f5f9 !important; }
 .bg-nexus-bg { background-color: #f1f5f9 !important; }
 .border-nexus-border { border-color: #e2e8f0 !important; }
+
+/* Custom theme accent utility classes */
+.bg-accent { background-color: var(--nexus-accent) !important; }
+.text-accent { color: var(--nexus-accent) !important; }
+.border-accent { border-color: var(--nexus-accent) !important; }

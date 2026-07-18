@@ -8,6 +8,14 @@ namespace NexusAI\Workforce\AI\Models;
  */
 class OpenRouterAdapter extends BaseAdapter {
 
+	public function get_id(): string {
+		return 'openrouter';
+	}
+
+	public function generate_embeddings( string $text ): array {
+		return [];
+	}
+
 	protected function get_base_url(): string {
 		return 'https://openrouter.ai/api/v1/';
 	}

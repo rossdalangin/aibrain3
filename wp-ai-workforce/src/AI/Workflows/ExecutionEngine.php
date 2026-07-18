@@ -74,8 +74,27 @@ class ExecutionEngine {
 	}
 
 	private function get_orchestrator( array $agent_data ): Orchestrator {
+		$settings_repo = new \NexusAI\Workforce\Repositories\SettingsRepository();
+		$default_model = $settings_repo->get( 'default_model', 'gpt-4o' );
+
 		$model_settings = json_decode( $agent_data['model_settings'] ?? '{}', true );
-		$provider = $model_settings['provider'] ?? 'openai';
+		$model_name = $agent_data['model'] ?? $model_settings['model'] ?? $default_model;
+		if ( empty( $model_name ) ) {
+			$model_name = $default_model;
+		}
+
+		// Dynamically determine the provider based on the chosen model name
+		$provider = 'openai';
+		if ( strpos( $model_name, 'claude' ) !== false ) {
+			$provider = 'claude';
+		} elseif ( strpos( $model_name, 'gemini' ) !== false ) {
+			$provider = 'gemini';
+		} elseif ( strpos( $model_name, 'llama' ) !== false || strpos( $model_name, 'openrouter' ) !== false ) {
+			$provider = 'openrouter';
+		} elseif ( strpos( $model_name, 'local' ) !== false ) {
+			$provider = 'ollama';
+		}
+
 		$model = ModelFactory::create( $provider );
 		return new Orchestrator( $model );
 	}

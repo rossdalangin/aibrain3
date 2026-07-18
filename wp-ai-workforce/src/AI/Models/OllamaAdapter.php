@@ -8,6 +8,14 @@ namespace NexusAI\Workforce\AI\Models;
  */
 class OllamaAdapter extends BaseAdapter {
 
+	public function get_id(): string {
+		return 'ollama';
+	}
+
+	public function generate_embeddings( string $text ): array {
+		return [];
+	}
+
 	protected function get_base_url(): string {
 		// Default Ollama local URL, can be overridden in settings
 		return 'http://localhost:11434/api/';

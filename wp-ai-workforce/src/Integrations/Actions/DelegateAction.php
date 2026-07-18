@@ -43,8 +43,27 @@ class DelegateAction extends BaseAction {
 		}
 
 		// Instantiate specialist's orchestrator
+		$settings_repo = new \NexusAI\Workforce\Repositories\SettingsRepository();
+		$default_model = $settings_repo->get( 'default_model', 'gpt-4o' );
+
 		$model_settings = json_decode( $specialist_data['model_settings'] ?? '{}', true );
-		$provider = $model_settings['provider'] ?? 'openai';
+		$model_name = $specialist_data['model'] ?? $model_settings['model'] ?? $default_model;
+		if ( empty( $model_name ) ) {
+			$model_name = $default_model;
+		}
+
+		// Dynamically determine the provider based on the chosen model name
+		$provider = 'openai';
+		if ( strpos( $model_name, 'claude' ) !== false ) {
+			$provider = 'claude';
+		} elseif ( strpos( $model_name, 'gemini' ) !== false ) {
+			$provider = 'gemini';
+		} elseif ( strpos( $model_name, 'llama' ) !== false || strpos( $model_name, 'openrouter' ) !== false ) {
+			$provider = 'openrouter';
+		} elseif ( strpos( $model_name, 'local' ) !== false ) {
+			$provider = 'ollama';
+		}
+
 		$model = ModelFactory::create( $provider );
 		$orchestrator = new Orchestrator( $model );
 

@@ -172,8 +172,12 @@ class ChatController {
 	}
 
 	private function get_orchestrator( array $agent_data ): Orchestrator {
+		$default_model = $this->settings->get( 'default_model', 'gpt-4o' );
 		$model_settings = json_decode( $agent_data['model_settings'] ?? '{}', true );
-		$model_name = $agent_data['model'] ?? $model_settings['model'] ?? 'gpt-4o';
+		$model_name = $agent_data['model'] ?? $model_settings['model'] ?? $default_model;
+		if ( empty( $model_name ) ) {
+			$model_name = $default_model;
+		}
 
 		// Dynamically determine the provider based on the chosen model name
 		$provider = 'openai';
